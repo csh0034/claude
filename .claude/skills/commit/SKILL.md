@@ -45,13 +45,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### subject (필수)
 
-- 명령형 현재형 동사로 시작 (added X → add O)
-- 첫 글자 소문자
+- 반드시 한글로 작성
+- 명령형으로 시작
 - 마침표 없음
 - 50자 이내
 
 ### body (선택)
 
+- 반드시 한글로 작성
 - 무엇을, 왜 변경했는지 설명
 - subject와 빈 줄로 구분
 - 72자 줄바꿈
@@ -59,16 +60,16 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ## 예시
 
 ```
-feat(member): add email duplication check
+feat(member): 이메일 중복 검사 추가
 
 - 중복 이메일로 회원가입 시도 시 BusinessException을 던지도록 변경.
 - MemberRepository.existsByEmail을 통해 도메인 레이어에서 검증.
 ```
 
 ```
-refactor(infra): extract domain-jpa mapping to MemberMapper
+refactor(infra): 도메인-JPA 매핑 로직을 MemberMapper로 분리
 ```
 
 ```
-test(architecture): add common layer dependency rule tests
+test(architecture): common 레이어 의존성 규칙 테스트 추가
 ```
