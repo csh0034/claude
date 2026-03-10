@@ -42,8 +42,6 @@ class MemberController(
 }
 ```
 
-- IMPORTANT: Controller는 UseCase(Input Port) 인터페이스만 의존
-- IMPORTANT: Controller에 비즈니스 로직 금지, infra 패키지 import 금지
 - Request → Command 변환, Result → Response 변환만 수행
 - 생성자 주입만 사용 (`@Autowired` 필드 주입 금지)
 
@@ -54,7 +52,6 @@ MemberCreateRequest (ui)  →  .toCommand()  →  CreateMemberCommand (applicati
 MemberResult (application)  →  MemberResponse.from(result)  →  MemberResponse (ui)
 ```
 
-- IMPORTANT: ui DTO와 application DTO는 별개 클래스
 - Request DTO에 `@field:` Validation 어노테이션 사용 (Kotlin 특성)
 
 ## UI DTO 예시1
