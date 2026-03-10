@@ -1,4 +1,4 @@
-package com.ask.claude.application.member.port.`in`
+package com.ask.claude.application.member.port
 
 import com.ask.claude.application.member.command.CreateMemberCommand
 import com.ask.claude.application.member.result.CreateMemberResult

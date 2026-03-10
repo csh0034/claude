@@ -1,6 +1,6 @@
 package com.ask.claude.ui.member
 
-import com.ask.claude.application.member.port.`in`.CreateMemberUseCase
+import com.ask.claude.application.member.port.CreateMemberUseCase
 import com.ask.claude.ui.common.ApiResponse
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus

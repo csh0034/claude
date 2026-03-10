@@ -1,7 +1,7 @@
 package com.ask.claude.ui.member
 
 import com.ask.claude.application.member.fixture.MemberApplicationFixture
-import com.ask.claude.application.member.port.`in`.CreateMemberUseCase
+import com.ask.claude.application.member.port.CreateMemberUseCase
 import com.ask.claude.common.exception.BusinessException
 import com.ask.claude.common.exception.ErrorCode
 import com.ninjasquad.springmockk.MockkBean

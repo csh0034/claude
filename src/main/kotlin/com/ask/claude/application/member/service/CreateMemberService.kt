@@ -1,7 +1,7 @@
 package com.ask.claude.application.member.service
 
 import com.ask.claude.application.member.command.CreateMemberCommand
-import com.ask.claude.application.member.port.`in`.CreateMemberUseCase
+import com.ask.claude.application.member.port.CreateMemberUseCase
 import com.ask.claude.application.member.result.CreateMemberResult
 import com.ask.claude.common.exception.BusinessException
 import com.ask.claude.common.exception.ErrorCode
