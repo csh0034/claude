@@ -252,6 +252,14 @@ class ArchitectureRuleTest {
                 .should().resideInAPackage(UI)
                 .check(importedClasses)
         }
+
+        @Test
+        fun `ui는 domain의 Port를 직접 참조할 수 없다`() {
+            noClasses().that().resideInAPackage(UI)
+                .should().dependOnClassesThat()
+                .haveSimpleNameEndingWith("Port")
+                .check(importedClasses)
+        }
     }
 
     @Nested
@@ -288,6 +296,14 @@ class ArchitectureRuleTest {
         @Test
         fun `Extension은 common 패키지에 있어야 한다`() {
             classes().that().haveSimpleNameEndingWith("Extension")
+                .should().resideInAPackage(COMMON)
+                .check(importedClasses)
+        }
+
+        @Test
+        fun `@Configuration 어노테이션 클래스는 common 패키지에 있어야 한다`() {
+            classes().that().areAnnotatedWith("org.springframework.context.annotation.Configuration")
+                .and().resideInAPackage("com.ask.claude..")
                 .should().resideInAPackage(COMMON)
                 .check(importedClasses)
         }
