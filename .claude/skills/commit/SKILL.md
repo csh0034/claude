@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Angular Commit Convention 기반으로 staged 변경사항을 분석하고 커밋을 작성한다
+description: 커밋 요청시 Angular Commit Convention 기반으로 staged 변경사항을 분석하고 실행한다
 ---
 
 다음 절차에 따라 Angular Commit Convention 기반으로 커밋을 작성하라.

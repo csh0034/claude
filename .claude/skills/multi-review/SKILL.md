@@ -1,6 +1,6 @@
 ---
 name: multi-review
-description: "여러 전문가 관점에서 코드 리뷰를 진행한다"
+description: 여러 전문가 관점에서 코드 리뷰를 진행한다
 ---
 
 # 멀티 퍼소나 코드 리뷰
