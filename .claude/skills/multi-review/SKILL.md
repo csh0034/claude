@@ -9,6 +9,7 @@ description: 여러 전문가 관점에서 코드 리뷰를 진행한다
 - **Security**: 보안 취약점 (인젝션, 인증 우회 등)
 - **Performance**: 성능 이슈 (N+1, 메모리 누수 등)
 - **Maintainability**: 유지보수성 (복잡도, 결합도 등)
+- **Architecture**: 아키텍처 검증 (의존 방향, import 규칙, architecture.md 참고)
 - **Testing**: 테스트 커버리지와 품질
 
 ## 실행 방법
