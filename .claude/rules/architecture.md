@@ -60,7 +60,7 @@ IMPORTANT: 단일 모듈이므로 Gradle이 의존 방향을 강제하지 못한
 | application | 출력 DTO                   | `Result`                                                         |
 | infra | JPA Entity               | `JpaEntity`                                                      |
 | infra | JPA Repository           | `JpaRepository`                                                  |
-| infra | Port 구현체                 | `Adapter`                                                        |
+| infra | Output Port 구현체          | `Adapter`                                                        |
 | infra | 매퍼                       | `Mapper`                                                         |
 | ui | Controller               | `Controller`                                                     |
 | ui | HTTP Request             | `Request`                                                        |
