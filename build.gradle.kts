@@ -31,6 +31,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.10")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     testImplementation("com.tngtech.archunit:archunit-junit5:1.4.1")
+    runtimeOnly("com.h2database:h2")
 }
 
 kotlin {
@@ -50,7 +51,7 @@ tasks {
         useJUnitPlatform()
     }
     processResources {
-        filesMatching("**/application.yml") {
+        filesMatching("**/application.yaml") {
             expand(project.properties)
         }
     }
