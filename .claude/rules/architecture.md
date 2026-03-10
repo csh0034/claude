@@ -6,7 +6,7 @@
 
 - IMPORTANT: 의존성은 항상 안쪽(Domain)을 향한다
 - IMPORTANT: Domain은 어떤 외부 패키지도 의존하지 않는다 (common의 순수 Kotlin 요소 제외)
-- IMPORTANT: Output Port는 domain에 interface로 정의하고, infra의 Adapter가 이를 구현(implements)한다 (의존성 역전)
+- IMPORTANT: Output Port는 domain에 interface로 정의하고(`MemberPort` 등), infra의 Adapter가 이를 구현(implements)한다(`MemberAdapter` 등) (의존성 역전)
 - IMPORTANT: common은 모든 레이어에서 import 가능하지만, common 자체는 어떤 레이어도 import하지 않는다
 - Application은 Port 인터페이스만 알고, 구현체(Adapter)는 모른다
 
@@ -28,9 +28,9 @@ IMPORTANT: 단일 모듈이므로 Gradle이 의존 방향을 강제하지 못한
 
 ## 레이어별 구성
 
-- **domain**: Entity(순수 Kotlin 클래스), VO, Output Port(interface — `MemberRepository` 등), Domain Event. 프레임워크 어노테이션 절대 금지
+- **domain**: Entity(순수 Kotlin 클래스), VO, Output Port(interface — `MemberPort` 등), Domain Event. 프레임워크 어노테이션 절대 금지
 - **application**: Input Port(UseCase interface — `CreateMemberUseCase` 등), Service(구현체, `@Service`/`@Transactional` 허용), Command/Query/Result DTO
-- **infra**: JpaEntity(`@Entity`), JpaRepository, Adapter(domain Output Port의 구현체 — `MemberRepositoryAdapter` 등, `@Repository`), Mapper(Domain↔JPA 변환)
+- **infra**: JpaEntity(`@Entity`), JpaRepository, Adapter(domain Output Port의 구현체 — `MemberAdapter` 등, `@Repository`), Mapper(Domain↔JPA 변환)
 - **ui**: Controller(`@RestController`), Request/Response DTO
 - **common**: 횡단 관심사만 — constant/, exception/, config/(`@Configuration`), extension/
 
@@ -51,7 +51,7 @@ IMPORTANT: 단일 모듈이므로 Gradle이 의존 방향을 강제하지 못한
 | 패키지 | 종류                       | 접미사                                                              |
 |--------|--------------------------|------------------------------------------------------------------|
 | domain | Entity / VO              | (없음)                                                             |
-| domain | Output Port              | `Repository`                                                     |
+| domain | Output Port              | `Port`                                                           |
 | domain | Domain Event             | `Event`                                                          |
 | domain | Domain Service           | `DomainService`                                                  |
 | application | Input Port               | `UseCase`                                                        |
