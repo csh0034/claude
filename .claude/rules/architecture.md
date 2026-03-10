@@ -19,12 +19,13 @@ IMPORTANT: 단일 모듈이므로 Gradle이 의존 방향을 강제하지 못한
 | `domain` | `common` (순수 Kotlin 요소만) | `application`, `infra`, `ui`, Spring/JPA 전부 |
 | `application` | `domain`, `common` | `infra`, `ui` |
 | `infra` | `domain`, `application`, `common` | `ui` |
-| `ui` | `application`, `common` | `domain` 직접 참조 최소화, `infra` 금지 |
+| `ui` | `application`, `common` | `domain`의 enum/VO만 허용, Entity·Port 금지. `infra` 금지 |
 | `common` | 없음 (다른 레이어 패키지 의존 금지) | `domain`, `application`, `infra`, `ui` |
 
 - IMPORTANT: `domain` 패키지는 `common`의 순수 Kotlin 요소(상수, 기본 예외)만 사용 가능. Spring 설정 클래스 import 금지
 - IMPORTANT: `ui`에서 `infra`를 직접 import 금지
 - IMPORTANT: `application`에서 `infra`를 직접 import 금지
+- IMPORTANT: `ui`에서 `domain`의 enum, VO만 import 허용. Entity, Port, Domain Service 직접 참조 금지
 
 ## 레이어별 구성
 
