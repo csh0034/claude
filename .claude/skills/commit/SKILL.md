@@ -56,6 +56,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - 무엇을, 왜 변경했는지 설명
 - subject와 빈 줄로 구분
 - 72자 줄바꿈
+- 반드시 dash(`-`)로 시작하는 목록 형식으로 작성
 
 ## 예시
 
