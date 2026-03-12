@@ -295,3 +295,4 @@ Harness Engineering은
 * https://www.salesforce.com/agentforce/ai-agents/agent-harness/
 * https://authenti.ca/news/harness-engineering
 * https://news.hada.io/topic?id=26874
+* https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html
