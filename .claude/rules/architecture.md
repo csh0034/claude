@@ -67,3 +67,16 @@ IMPORTANT: 단일 모듈이므로 Gradle이 의존 방향을 강제하지 못한
 | ui | HTTP Request             | `Request`                                                        |
 | ui | HTTP Response            | `Response`                                                       |
 | common | 상수 / 에러코드 / 예외 / 설정 / 확장 | `Constants` / `ErrorCode` / `Exception` / `Config` / `Extension` |
+
+## 아키텍처 테스트 (Konsist)
+
+[Konsist](https://docs.konsist.lemonappdev.com/)를 사용하여 아키텍처 규칙을 자동 검증한다.
+
+Konsist 테스트는 `src/test` 하위에 위치하며, 다음 규칙들을 검증한다:
+
+- **레이어 의존 방향**: 위 패키지 import 규칙 표에 정의된 허용/금지 import를 자동 검사
+- **네이밍 컨벤션**: 각 레이어별 클래스 접미사 규칙 준수 여부 검증
+- **어노테이션 제약**: domain 패키지 내 프레임워크 어노테이션(`@Entity`, `@Service`, `@Component` 등) 사용 금지 검증
+- **Domain 순수성**: domain 패키지가 Spring/JPA 등 외부 프레임워크에 의존하지 않는지 검증
+
+IMPORTANT: 새로운 아키텍처 규칙을 추가하면 반드시 대응하는 Konsist 테스트도 함께 작성한다
