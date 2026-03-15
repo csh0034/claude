@@ -2,199 +2,175 @@
 
 ## Context
 
-이 프로젝트는 Kotlin Spring Boot Clean Architecture 기반 애플리케이션으로, Claude Code 같은 AI 에이전트가 안정적으로 코드를 생성/수정할 수 있는 환경(Harness)을 구축하는 것이 목표이다.
+이 프로젝트는 Kotlin Spring Boot Clean Architecture(Onion Architecture) 기반 애플리케이션으로, Claude Code AI 에이전트가 안정적으로 코드를 생성/수정할 수 있는 환경(Harness)을 구축하는 것이 목표이다.
 
-**Harness Engineering 핵심 원칙**: `Model Quality < Harness Quality` — 같은 모델이라도 좋은 Harness가 있으면 안정적인 결과를 만들고, 없으면 데모 수준에 머문다.
+**핵심 원칙**: `Model Quality < Harness Quality` — 같은 모델이라도 좋은 Harness가 있으면 안정적인 결과를, 없으면 데모 수준에 머문다.
 
-**현재 상태**: Context Engineering(CLAUDE.md, architecture rules)과 Architectural Constraints(ArchUnit 테스트, 레이어별 테스트)가 이미 잘 갖춰져 있다. **Verification 자동화**와 **Feedback Loop**이 주요 갭이다.
-
----
-
-## Phase 1: Verification 인프라 구축 (최고 우선순위)
-
-AI가 만든 코드를 자동으로 검증하는 체계를 구축한다.
-
-### 1.1 ktlint + detekt 정적 분석 추가
-
-**수정 파일**: `build.gradle.kts`
-
-- `org.jlleitschuh.gradle.ktlint` 플러그인 추가 (코드 포맷 강제)
-- `io.gitlab.arturbosch.detekt` 플러그인 추가 (정적 분석)
-
-**신규 파일**:
-- `.editorconfig` — ktlint 설정 (`ktlint_code_style = ktlint_official`)
-- `config/detekt/detekt.yml` — detekt 규칙 설정 (복잡도 임계값, 프로젝트에 맞는 룰 조정)
-
-### 1.2 통합 검증 태스크
-
-**수정 파일**: `build.gradle.kts`
-
-```kotlin
-tasks.register("verify") {
-    dependsOn("ktlintCheck", "detektMain", "test")
-    description = "전체 검증: 포맷 + 정적분석 + 테스트"
-}
-```
-
-AI 에이전트가 `./gradlew verify` 한 줄로 모든 검증을 실행할 수 있게 한다.
-
-### 1.3 JaCoCo 코드 커버리지
-
-**수정 파일**: `build.gradle.kts`
-
-- `jacoco` 플러그인 추가
-- 커버리지 임계값: domain 90%, application 80%, 전체 70%
-- `verify` 태스크에 커버리지 검증 연결
-
-### 1.4 GitHub Actions CI
-
-**신규 파일**: `.github/workflows/ci.yml`
-
-- push/PR 트리거
-- Java 25 + Gradle wrapper 설정
-- `./gradlew verify` 실행
-- Gradle 캐싱 + 테스트 리포트 업로드
+**4대 핵심 구성요소**: Context Engineering, Architectural Constraints, Verification/Evaluation, Feedback Loop
 
 ---
 
-## Phase 2: Feedback Loop 구축 (높은 우선순위)
+## 1. Context Engineering (AI에게 적절한 정보를 제공)
 
-Phase 1의 `verify` 태스크를 활용하여 AI의 자기 수정 루프를 만든다.
+> AI가 접근할 수 없는 정보는 존재하지 않는 것과 같다.
 
-### 2.1 PostToolUse 자동 테스트 훅
+### 현재 상태
 
-**신규 파일**: `.claude/hooks/post-edit-verify.sh`
+- `CLAUDE.md` — 프로젝트 개요, 기술 스택 정보 제공
+- `.claude/rules/` — 4개 규칙 파일 운영 중
+  - `architecture.md` — Onion Architecture 의존 방향, 패키지 import 규칙, 네이밍 컨벤션, Konsist 테스트 가이드
+  - `testing.md` — 테스트 작성 규칙
+  - `api-convention.md` — API 설계 규칙
+  - `database.md` — 데이터베이스 관련 규칙
+- `.claude/skills/` — 3개 스킬 운영 중
+  - `commit/` — Angular Commit Convention 기반 커밋 자동화
+  - `multi-review/` — 멀티 퍼소나 코드 리뷰
+  - `redmine/` — Redmine 이슈 조회 및 구현
 
-Edit/Write 도구 사용 후 `.kt` 파일이 변경되면 자동으로 `./gradlew test --fail-fast --quiet` 실행. 실패 시 오류 로그를 Claude에게 전달하여 자동 수정 유도.
+### 목표
 
-**수정 파일**: `.claude/settings.json` — PostToolUse 훅 등록
+- `CLAUDE.md` 보강 — 검증 명령어, 새 기능 추가 체크리스트 포함
 
-### 2.2 파일 보호 훅 강화
+### 작업 항목
 
-**수정 파일**: `.claude/hooks/protect-files.sh`
-
-현재 `.env`, `README.md`, `.git/`만 보호 중. 추가 보호 대상:
-- `build.gradle.kts`, `settings.gradle.kts` (경고만, 차단하지 않음)
-- `.claude/settings.json`, `.claude/hooks/` (AI가 자기 제약을 완화하는 것 방지)
-- `gradlew`, `gradlew.bat`
-
-### 2.3 워크플로우 규칙
-
-**신규 파일**: `.claude/rules/workflow.md`
-
-- 기능 완료 후 커밋 메시지에 변경 요약 포함
-- 멀티 스텝 작업 시 레이어별 중간 커밋
-- 변경 후 `./gradlew verify` 실행 필수
+- **1-1**: CLAUDE.md에 빌드/검증 명령어 섹션 추가 (`./gradlew verify`, `./gradlew test`, `./gradlew ktlintFormat`) — 수정: `CLAUDE.md`
 
 ---
 
-## Phase 3: Context Engineering 강화 (중간 우선순위)
+## 2. Architectural Constraints (AI 행동 제한)
 
-AI가 프로젝트를 빠르게 이해할 수 있는 맥락 정보를 보강한다.
+> AI의 행동을 제한하여 아키텍처 규칙 위반을 사전에 방지한다.
 
-### 3.1 ARCHITECTURE.md 생성
+### 현재 상태
 
-**신규 파일**: `ARCHITECTURE.md`
+- **Konsist 아키텍처 테스트** (`src/test/kotlin/.../architecture/ArchitectureRuleTest.kt`)
+  - 레이어 간 의존 방향 검증 (domain, application, infra, ui, common)
+  - Domain 순수성 검증 (Spring/JPA/Jackson import 금지, @Entity/@Id/@Column 금지)
+  - 네이밍 컨벤션 검증 (Port, UseCase, Service, Adapter, JpaEntity 등 위치 검사)
+  - @Autowired 필드 주입 금지
+- **protect-files.sh 훅** (PreToolUse: Edit, Write, Bash)
+  - 보호 대상: `.env`, `README.md`, `.git/`
 
-- ASCII 레이어 다이어그램
-- 의존 방향 시각화
-- 패키지 구조 트리
-- 데이터 흐름 예시 (Create Member 전체 흐름)
-- 새 기능 추가 체크리스트
+### 목표
 
-### 3.2 ADR (Architecture Decision Records)
+- Konsist 규칙 보강 — 누락된 검증 항목 추가
+- ktlint + detekt 정적 분석 도입 — 코드 품질 제약 자동화
 
-**신규 디렉토리**: `docs/adr/`
+### 작업 항목
 
-- `0001-clean-architecture-onion.md` — Onion Architecture 선택 이유
-- `0002-domain-jpa-entity-separation.md` — Domain Entity ≠ JPA Entity 결정
-- `0003-output-port-in-domain.md` — Output Port가 domain에 위치하는 이유
-- `template.md` — 향후 ADR 템플릿
-
-### 3.3 CLAUDE.md 보강
-
-**수정 파일**: `CLAUDE.md`
-
-검증 명령어 섹션 추가:
-```
-## 빌드 및 검증 명령
-- ./gradlew verify — 전체 검증
-- ./gradlew test — 테스트만
-- ./gradlew ktlintFormat — 포맷 자동 수정
-```
+| # | 작업 | 수정/신규 파일 |
+|---|------|-------------|
+| 2-1 | Konsist 규칙 보강: common 레이어 @Service/@Repository/@Controller 사용 금지, Domain Event가 Spring ApplicationEvent 미상속 검증, Query DTO가 application 패키지 위치 검증 | 수정: `src/test/kotlin/com/ask/claude/architecture/ArchitectureRuleTest.kt` |
+| 2-2 | ktlint 플러그인 추가 (`org.jlleitschuh.gradle.ktlint`) | 수정: `build.gradle.kts`, 신규: `.editorconfig` |
+| 2-3 | detekt 플러그인 추가 (`io.gitlab.arturbosch.detekt`) | 수정: `build.gradle.kts`, 신규: `config/detekt/detekt.yml` |
 
 ---
 
-## Phase 4: Architectural Constraints 확장 (중간 우선순위)
+## 3. Verification / Evaluation (결과 자동 검증)
 
-### 4.1 ArchUnit 규칙 보강
+> AI가 만든 코드를 자동으로 검증하여 품질을 보장한다.
 
-**수정 파일**: `src/test/kotlin/com/ask/claude/architecture/ArchitectureRuleTest.kt`
+### 현재 상태
 
-누락된 규칙 추가:
-- common 레이어 `@Service`/`@Repository`/`@Controller` 사용 금지 (`@Configuration`만 허용)
-- Domain Event가 Spring `ApplicationEvent`를 상속하지 않는 것 검증
-- `Query` DTO가 application 패키지에 위치하는 것 검증
+- **JUnit 5 + MockK** — 단위 테스트 프레임워크
+- **Konsist** — 아키텍처 규칙 자동 검증 (테스트 시 실행)
+- 통합 검증 태스크 없음 — 각 검증을 개별 실행해야 함
 
-### 4.2 스캐폴딩 스킬
+### 목표
 
-**신규 파일**: `.claude/skills/scaffold/SKILL.md`
+- 통합 `verify` 태스크 — `./gradlew verify` 한 줄로 포맷 + 정적분석 + 테스트 전체 실행
+- Kover 커버리지 — `org.jetbrains.kotlinx.kover` 플러그인으로 Kotlin 네이티브 커버리지 측정, 패키지별 임계값 설정 (domain 90%, application 80%, 전체 70%)
 
-새 도메인 기능 추가 시 Clean Architecture 전 레이어를 TDD 순서로 생성하는 구조화된 절차 제공.
+### 작업 항목
 
----
-
-## Phase 5: 통합 테스트 & 관측성 (낮은 우선순위)
-
-### 5.1 API 통합 테스트
-
-**신규 파일**: `src/test/kotlin/com/ask/claude/integration/MemberApiIntegrationTest.kt`
-
-`@SpringBootTest(webEnvironment = RANDOM_PORT)` + `TestRestTemplate`으로 HTTP 요청부터 DB까지 전체 흐름 검증.
-
-### 5.2 Actuator 헬스 체크
-
-**수정 파일**: `build.gradle.kts` — `spring-boot-starter-actuator` 의존성 추가
-**수정 파일**: `src/main/resources/application.yaml` — health, info 엔드포인트 노출
-
-### 5.3 로깅 규칙
-
-**신규 파일**: `.claude/rules/logging.md` — 로깅 레벨 규칙, 민감 데이터 로깅 금지 등
+| # | 작업 | 수정/신규 파일 |
+|---|------|-------------|
+| 3-1 | 통합 verify 태스크 등록: `ktlintCheck` + `detektMain` + `test` 의존 | 수정: `build.gradle.kts` |
+| 3-2 | Kover 플러그인 추가 (`org.jetbrains.kotlinx.kover:0.9.4`), 패키지별 커버리지 임계값 설정 (`koverVerify`), verify 태스크에 연결. `koverHtmlReport`로 리포트 생성 | 수정: `build.gradle.kts` |
 
 ---
 
-## Phase 6: Git 훅 & 고급 피드백 (향후)
+## 4. Feedback Loop (자동 수정 루프)
 
-### 6.1 Pre-commit Git 훅
+> AI가 스스로 문제를 감지하고 수정하는 반복 구조를 구축한다.
 
-**신규 파일**: `.githooks/pre-commit` — 커밋 전 `ktlintCheck` + `detektMain` 자동 실행
-**수정 파일**: `build.gradle.kts` — `installGitHooks` 태스크 추가
+### 현재 상태
 
-### 6.2 검증 스킬
+- **PreToolUse 훅만 존재** — `protect-files.sh`가 Edit/Write/Bash 전 파일 보호 검사
+- PostToolUse 훅 없음 — 코드 변경 후 자동 검증 미실시
+- 워크플로우 규칙 없음 — 변경 후 검증 실행이 규칙화되지 않음
 
-**신규 파일**: `.claude/skills/validate/SKILL.md` — `/validate` 명령으로 전체 검증 + 리포트
+### 목표
+
+- PostToolUse 자동 테스트 훅 — `.kt` 파일 변경 시 자동 테스트 실행, 실패 시 오류 피드백
+- 워크플로우 규칙 — 변경 후 검증 실행 필수화
+
+### 작업 항목
+
+| # | 작업 | 수정/신규 파일 |
+|---|------|-------------|
+| 4-1 | PostToolUse 자동 테스트 훅: Edit/Write 후 `.kt` 파일 변경 시 `./gradlew test --fail-fast --quiet` 실행, 실패 시 오류 로그 전달 | 신규: `.claude/hooks/post-edit-verify.sh`, 수정: `.claude/settings.json` |
+| 4-2 | 워크플로우 규칙: 기능 완료 후 `./gradlew verify` 실행 필수, 멀티 스텝 작업 시 레이어별 중간 커밋 | 신규: `.claude/rules/workflow.md` |
 
 ---
 
-## 실행 순서 및 의존성
+## 5. Multi-Agent 협업 (에이전트 간 협업 워크플로우)
+
+> 복수 에이전트가 역할을 분담하여 코드 생성, 리뷰, 검증을 수행한다.
+
+### 현재 상태
+
+- `multi-review/` 스킬 — 여러 전문가 관점에서 코드 리뷰 수행
+- `commit/` 스킬 — Angular Commit Convention 기반 커밋 자동화
+- `redmine/` 스킬 — Redmine 이슈 연동
+
+### 목표
+
+- 검증 스킬 — `/validate` 명령으로 전체 검증 + 결과 리포트
+
+### 작업 항목
+
+| # | 작업 | 수정/신규 파일 |
+|---|------|-------------|
+| 5-1 | 검증 스킬: `./gradlew verify` 실행 후 결과를 구조화하여 리포트, 실패 항목별 수정 가이드 제공 | 신규: `.claude/skills/validate/SKILL.md` |
+
+---
+
+## 실행 우선순위 및 의존성
 
 ```
-Phase 1 ──→ Phase 2 (verify 태스크 필요)
-  │
-  ├──→ Phase 5 (빌드 설정 필요)
-  │
-Phase 3 (독립, Phase 1과 병렬 가능)
-Phase 4 (독립, 언제든 가능)
-Phase 6 (Phase 1-2 완료 후)
+[2-2, 2-3] ktlint/detekt 추가
+     │
+     ▼
+[3-1] verify 태스크 ──→ [4-1] PostToolUse 훅 (verify 필요)
+     │                        │
+     ▼                        ▼
+[3-2] Kover 커버리지    [4-2] 워크플로우 규칙
+                              │
+                              ▼
+                        [1-1] CLAUDE.md 보강 (검증 명령어 확정 후)
+
+[2-1] Konsist 보강 ─────── 독립, 언제든 가능
+[5-1] 검증 스킬 ─────────→ [3-1] verify 태스크 완료 후
 ```
+
+**권장 실행 순서**:
+1. 2-2, 2-3 → 3-1 → 3-2 (정적 분석 → 통합 검증 → 커버리지)
+2. 4-1 → 4-2 → 1-1 (피드백 루프 → 워크플로우 → 문서 보강)
+3. 2-1 (독립 작업)
+4. 5-1 (verify 태스크 완료 후)
+
+---
 
 ## 검증 방법
 
-각 Phase 완료 후:
-1. `./gradlew verify` 실행하여 전체 빌드 성공 확인
-2. 의도적으로 잘못된 코드 작성 후 ktlint/detekt/ArchUnit이 잡아내는지 확인
-3. `.kt` 파일 수정 후 PostToolUse 훅이 자동 테스트를 트리거하는지 확인
-4. CI 파이프라인에서 PR의 검증이 자동 실행되는지 확인
+- HARNESS.md의 4대 핵심 구성요소(Context Engineering, Constraints, Verification, Feedback Loop)가 빠짐없이 커버되는지 확인
+- 모든 작업 항목에 수정/신규 파일 경로가 명시되어 있는지 확인
+- 각 Phase 완료 후 `./gradlew verify` 실행하여 전체 빌드 성공 확인
+- 의도적으로 잘못된 코드 작성 후 ktlint/detekt/Konsist가 잡아내는지 확인
+- `.kt` 파일 수정 후 PostToolUse 훅이 자동 테스트를 트리거하는지 확인
+
+---
 
 ## 참고 자료
 
@@ -202,10 +178,3 @@ Phase 6 (Phase 1-2 완료 후)
 - [Anthropic - Effective Harnesses for Long-Running Agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [Martin Fowler - Harness Engineering](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html)
 - [Phil Schmid - The Importance of Agent Harness in 2026](https://www.philschmid.de/agent-harness-2026)
-
----
-
-## 추가 참고 자료 (csh0034)
-
-- [아키텍처 의사결정 기록 (Architecture Decision Record, ADR) 무엇인가?](https://www.cncf.co.kr/blog/adr-guide/)
-- [ADR을 써야 하는 이유](https://news.hada.io/topic?id=2665)
