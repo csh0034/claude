@@ -33,7 +33,7 @@
 
 ### 작업 항목
 
-- **1-1**: CLAUDE.md에 빌드/검증 명령어 섹션 추가 (`./gradlew verify`, `./gradlew test`, `./gradlew ktlintFormat`) — 수정: `CLAUDE.md`
+- **1-1**: CLAUDE.md에 빌드/검증 명령어 섹션 추가 (`./gradlew check`, `./gradlew test`, `./gradlew ktlintFormat`, `./gradlew koverHtmlReport`) — 수정: `CLAUDE.md` ✅
 
 ---
 
@@ -61,8 +61,8 @@
 | # | 작업 | 수정/신규 파일 |
 |---|------|-------------|
 | 2-1 | Konsist 규칙 보강: common 레이어 @Service/@Repository/@Controller 사용 금지, Domain Event가 Spring ApplicationEvent 미상속 검증, Query DTO가 application 패키지 위치 검증 | 수정: `src/test/kotlin/com/ask/claude/architecture/ArchitectureRuleTest.kt` |
-| 2-2 | ktlint 플러그인 추가 (`org.jlleitschuh.gradle.ktlint`) | 수정: `build.gradle.kts`, 신규: `.editorconfig` |
-| 2-3 | detekt 플러그인 추가 (`io.gitlab.arturbosch.detekt`) | 수정: `build.gradle.kts`, 신규: `config/detekt/detekt.yml` |
+| 2-2 | ktlint 플러그인 추가 (`org.jlleitschuh.gradle.ktlint`) | 수정: `build.gradle.kts`, 신규: `.editorconfig` | ✅ |
+| 2-3 | detekt 플러그인 추가 — Kotlin 2.3.10과 호환되는 안정 버전 없음 (detekt 2.0 정식 출시 후 재검토) | 보류 | ⏸️ |
 
 ---
 
@@ -74,19 +74,20 @@
 
 - **JUnit 5 + MockK** — 단위 테스트 프레임워크
 - **Konsist** — 아키텍처 규칙 자동 검증 (테스트 시 실행)
-- 통합 검증 태스크 없음 — 각 검증을 개별 실행해야 함
+- **Kover 0.9.7** — Kotlin 네이티브 커버리지 측정, 전체 70% 임계값 설정 ✅
+- **통합 검증** — `./gradlew check`로 ktlint + 테스트 + koverVerify 자동 실행 (Gradle `check` 태스크에 자동 연결됨) ✅
 
 ### 목표
 
-- 통합 `verify` 태스크 — `./gradlew verify` 한 줄로 포맷 + 정적분석 + 테스트 전체 실행
-- Kover 커버리지 — `org.jetbrains.kotlinx.kover` 플러그인으로 Kotlin 네이티브 커버리지 측정, 패키지별 임계값 설정 (domain 90%, application 80%, 전체 70%)
+- ~~통합 `verify` 태스크~~ → 별도 태스크 불필요. ktlint/kover 플러그인이 `check` 태스크에 자동 연결됨
+- Kover 커버리지 — 전체 70% 임계값 적용 완료. 패키지별 임계값(domain 90%, application 80%)은 향후 점진적으로 추가
 
 ### 작업 항목
 
-| # | 작업 | 수정/신규 파일 |
-|---|------|-------------|
-| 3-1 | 통합 verify 태스크 등록: `ktlintCheck` + `detektMain` + `test` 의존 | 수정: `build.gradle.kts` |
-| 3-2 | Kover 플러그인 추가 (`org.jetbrains.kotlinx.kover:0.9.4`), 패키지별 커버리지 임계값 설정 (`koverVerify`), verify 태스크에 연결. `koverHtmlReport`로 리포트 생성 | 수정: `build.gradle.kts` |
+| # | 작업 | 수정/신규 파일 | 상태 |
+|---|------|-------------|------|
+| 3-1 | ~~통합 verify 태스크~~ → 불필요. ktlint/kover가 Gradle `check` 태스크에 자동 의존 | — | ✅ (불필요) |
+| 3-2 | Kover 플러그인 추가 (`org.jetbrains.kotlinx.kover:0.9.7`), 전체 커버리지 임계값 70% 설정. `./gradlew koverHtmlReport`로 리포트 생성 | 수정: `build.gradle.kts` | ✅ |
 
 ---
 
@@ -110,7 +111,7 @@
 | # | 작업 | 수정/신규 파일 |
 |---|------|-------------|
 | 4-1 | PostToolUse 자동 테스트 훅: Edit/Write 후 `.kt` 파일 변경 시 `./gradlew test --fail-fast --quiet` 실행, 실패 시 오류 로그 전달 | 신규: `.claude/hooks/post-edit-verify.sh`, 수정: `.claude/settings.json` |
-| 4-2 | 워크플로우 규칙: 기능 완료 후 `./gradlew verify` 실행 필수, 멀티 스텝 작업 시 레이어별 중간 커밋 | 신규: `.claude/rules/workflow.md` |
+| 4-2 | 워크플로우 규칙: 기능 완료 후 `./gradlew check` 실행 필수, 멀티 스텝 작업 시 레이어별 중간 커밋 | 신규: `.claude/rules/workflow.md` |
 
 ---
 
@@ -132,33 +133,29 @@
 
 | # | 작업 | 수정/신규 파일 |
 |---|------|-------------|
-| 5-1 | 검증 스킬: `./gradlew verify` 실행 후 결과를 구조화하여 리포트, 실패 항목별 수정 가이드 제공 | 신규: `.claude/skills/validate/SKILL.md` |
+| 5-1 | 검증 스킬: `./gradlew check` 실행 후 결과를 구조화하여 리포트, 실패 항목별 수정 가이드 제공 | 신규: `.claude/skills/validate/SKILL.md` |
 
 ---
 
 ## 실행 우선순위 및 의존성
 
 ```
-[2-2, 2-3] ktlint/detekt 추가
-     │
-     ▼
-[3-1] verify 태스크 ──→ [4-1] PostToolUse 훅 (verify 필요)
-     │                        │
-     ▼                        ▼
-[3-2] Kover 커버리지    [4-2] 워크플로우 규칙
-                              │
-                              ▼
-                        [1-1] CLAUDE.md 보강 (검증 명령어 확정 후)
+[2-2] ktlint ✅   [2-3] detekt ⏸️ (Kotlin 2.3.10 호환 대기)
+
+[3-1] check 태스크 활용 ✅ ──→ [4-1] PostToolUse 훅
+[3-2] Kover 커버리지 ✅          │
+[1-1] CLAUDE.md 보강 ✅          ▼
+                           [4-2] 워크플로우 규칙
 
 [2-1] Konsist 보강 ─────── 독립, 언제든 가능
-[5-1] 검증 스킬 ─────────→ [3-1] verify 태스크 완료 후
+[5-1] 검증 스킬 ─────────→ check 태스크 활용
 ```
 
-**권장 실행 순서**:
-1. 2-2, 2-3 → 3-1 → 3-2 (정적 분석 → 통합 검증 → 커버리지)
-2. 4-1 → 4-2 → 1-1 (피드백 루프 → 워크플로우 → 문서 보강)
-3. 2-1 (독립 작업)
-4. 5-1 (verify 태스크 완료 후)
+**남은 작업 순서**:
+1. 4-1 → 4-2 (피드백 루프 → 워크플로우)
+2. 2-1 (독립 작업)
+3. 5-1 (검증 스킬)
+4. 2-3 (detekt 2.0 정식 출시 후)
 
 ---
 
@@ -166,8 +163,8 @@
 
 - HARNESS.md의 4대 핵심 구성요소(Context Engineering, Constraints, Verification, Feedback Loop)가 빠짐없이 커버되는지 확인
 - 모든 작업 항목에 수정/신규 파일 경로가 명시되어 있는지 확인
-- 각 Phase 완료 후 `./gradlew verify` 실행하여 전체 빌드 성공 확인
-- 의도적으로 잘못된 코드 작성 후 ktlint/detekt/Konsist가 잡아내는지 확인
+- 각 Phase 완료 후 `./gradlew check` 실행하여 전체 검증 성공 확인
+- 의도적으로 잘못된 코드 작성 후 ktlint/Konsist가 잡아내는지 확인
 - `.kt` 파일 수정 후 PostToolUse 훅이 자동 테스트를 트리거하는지 확인
 
 ---

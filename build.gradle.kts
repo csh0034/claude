@@ -5,6 +5,7 @@ plugins {
     id("org.springframework.boot") version "4.0.3"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
+    id("org.jetbrains.kotlinx.kover") version "0.9.7"
 }
 
 group = "com.ask"
@@ -45,6 +46,16 @@ allOpen {
     annotation("jakarta.persistence.Entity")
     annotation("jakarta.persistence.MappedSuperclass")
     annotation("jakarta.persistence.Embeddable")
+}
+
+kover {
+    reports {
+        verify {
+            rule {
+                minBound(70)
+            }
+        }
+    }
 }
 
 tasks {
