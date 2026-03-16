@@ -4,7 +4,6 @@ import com.ask.claude.application.member.command.CreateMemberCommand
 import com.ask.claude.application.member.result.CreateMemberResult
 
 object MemberApplicationFixture {
-
     fun createMemberCommand(
         name: String = "홍길동",
         email: String = "hong@example.com",

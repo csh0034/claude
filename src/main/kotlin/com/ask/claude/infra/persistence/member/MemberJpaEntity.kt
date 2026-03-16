@@ -17,10 +17,8 @@ class MemberJpaEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
-
     @Column(nullable = false, length = 100)
     val name: String,
-
     @Column(nullable = false, unique = true, length = 254)
     val email: String,
 )

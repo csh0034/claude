@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController
 class MemberController(
     private val createMemberUseCase: CreateMemberUseCase,
 ) {
-
     @PostMapping
     fun createMember(
         @Valid @RequestBody request: CreateMemberRequest,

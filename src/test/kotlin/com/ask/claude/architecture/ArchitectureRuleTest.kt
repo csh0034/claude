@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test
  * Output Port: domain에 interface 정의(`MemberPort`), infra Adapter가 implements(`MemberAdapter`)
  */
 class ArchitectureRuleTest {
-
     companion object {
         private val scope = Konsist.scopeFromProduction()
 
@@ -34,7 +33,6 @@ class ArchitectureRuleTest {
 
     @Nested
     inner class LayerDependency {
-
         @Test
         fun `레이어 간 의존 방향이 올바르다`() {
             scope.assertArchitecture {
@@ -55,10 +53,10 @@ class ArchitectureRuleTest {
 
     @Nested
     inner class DomainLayer {
-
-        private val domainFiles = scope.files.filter {
-            it.packagee?.name?.startsWith(DOMAIN_PREFIX) == true
-        }
+        private val domainFiles =
+            scope.files.filter {
+                it.packagee?.name?.startsWith(DOMAIN_PREFIX) == true
+            }
 
         @Test
         fun `domain은 Spring 프레임워크를 참조할 수 없다`() {
@@ -83,14 +81,16 @@ class ArchitectureRuleTest {
 
         @Test
         fun `domain 클래스는 @Entity 어노테이션을 가질 수 없다`() {
-            scope.classes()
+            scope
+                .classes()
                 .filter { it.resideInPackage(DOMAIN) }
                 .assertFalse { it.hasAnnotationWithName("Entity") }
         }
 
         @Test
         fun `domain 프로퍼티는 @Id 어노테이션을 가질 수 없다`() {
-            scope.classes()
+            scope
+                .classes()
                 .filter { it.resideInPackage(DOMAIN) }
                 .flatMap { it.properties() }
                 .assertFalse { it.hasAnnotationWithName("Id") }
@@ -98,7 +98,8 @@ class ArchitectureRuleTest {
 
         @Test
         fun `domain 프로퍼티는 @Column 어노테이션을 가질 수 없다`() {
-            scope.classes()
+            scope
+                .classes()
                 .filter { it.resideInPackage(DOMAIN) }
                 .flatMap { it.properties() }
                 .assertFalse { it.hasAnnotationWithName("Column") }
@@ -106,21 +107,24 @@ class ArchitectureRuleTest {
 
         @Test
         fun `Output Port 인터페이스는 domain 패키지에 있어야 한다`() {
-            scope.interfaces()
+            scope
+                .interfaces()
                 .withNameEndingWith("Port")
                 .assertTrue { it.resideInPackage(DOMAIN) }
         }
 
         @Test
         fun `DomainEvent는 domain 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("Event")
                 .assertTrue { it.resideInPackage(DOMAIN) }
         }
 
         @Test
         fun `DomainService는 domain 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("DomainService")
                 .assertTrue { it.resideInPackage(DOMAIN) }
         }
@@ -128,7 +132,6 @@ class ArchitectureRuleTest {
 
     @Nested
     inner class ApplicationLayer {
-
         @Test
         fun `application Service는 Adapter 구현체를 직접 참조할 수 없다`() {
             scope.files
@@ -138,28 +141,32 @@ class ArchitectureRuleTest {
 
         @Test
         fun `@Service 어노테이션 클래스는 application 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withAnnotationNamed("Service")
                 .assertTrue { it.resideInPackage(APPLICATION) }
         }
 
         @Test
         fun `UseCase 인터페이스는 application 패키지에 있어야 한다`() {
-            scope.interfaces()
+            scope
+                .interfaces()
                 .withNameEndingWith("UseCase")
                 .assertTrue { it.resideInPackage(APPLICATION) }
         }
 
         @Test
         fun `Command DTO는 application 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("Command")
                 .assertTrue { it.resideInPackage(APPLICATION) }
         }
 
         @Test
         fun `Result DTO는 application 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("Result")
                 .assertTrue { it.resideInPackage(APPLICATION) }
         }
@@ -167,31 +174,34 @@ class ArchitectureRuleTest {
 
     @Nested
     inner class InfraLayer {
-
         @Test
         fun `Adapter는 infra 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("Adapter")
                 .assertTrue { it.resideInPackage(INFRA) }
         }
 
         @Test
         fun `JpaEntity는 infra 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("JpaEntity")
                 .assertTrue { it.resideInPackage(INFRA) }
         }
 
         @Test
         fun `JpaRepository는 infra 패키지에 있어야 한다`() {
-            scope.interfaces()
+            scope
+                .interfaces()
                 .withNameEndingWith("JpaRepository")
                 .assertTrue { it.resideInPackage(INFRA) }
         }
 
         @Test
         fun `Mapper는 infra 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("Mapper")
                 .assertTrue { it.resideInPackage(INFRA) }
         }
@@ -199,7 +209,6 @@ class ArchitectureRuleTest {
 
     @Nested
     inner class UiLayer {
-
         @Test
         fun `Controller는 Service 구현체를 직접 참조할 수 없다 - UseCase 인터페이스만 사용`() {
             scope.files
@@ -209,28 +218,32 @@ class ArchitectureRuleTest {
 
         @Test
         fun `Controller는 @RestController 어노테이션을 가져야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("Controller")
                 .assertTrue { it.hasAnnotationWithName("RestController") }
         }
 
         @Test
         fun `Controller는 ui 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("Controller")
                 .assertTrue { it.resideInPackage(UI) }
         }
 
         @Test
         fun `Request DTO는 ui 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("Request")
                 .assertTrue { it.resideInPackage(UI) }
         }
 
         @Test
         fun `Response DTO는 ui 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("Response")
                 .assertTrue { it.resideInPackage(UI) }
         }
@@ -245,17 +258,18 @@ class ArchitectureRuleTest {
 
     @Nested
     inner class CommonLayer {
-
         @Test
         fun `Extension은 common 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withNameEndingWith("Extension")
                 .assertTrue { it.resideInPackage(COMMON) }
         }
 
         @Test
         fun `@Configuration 어노테이션 클래스는 common 패키지에 있어야 한다`() {
-            scope.classes()
+            scope
+                .classes()
                 .withAnnotationNamed("Configuration")
                 .assertTrue { it.resideInPackage(COMMON) }
         }
@@ -263,10 +277,10 @@ class ArchitectureRuleTest {
 
     @Nested
     inner class GeneralRules {
-
         @Test
         fun `@Autowired 필드 주입을 사용할 수 없다 - 생성자 주입만 허용`() {
-            scope.classes()
+            scope
+                .classes()
                 .flatMap { it.properties() }
                 .assertFalse { it.hasAnnotationWithName("Autowired") }
         }

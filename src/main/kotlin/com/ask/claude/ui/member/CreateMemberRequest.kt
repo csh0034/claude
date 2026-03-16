@@ -9,7 +9,6 @@ data class CreateMemberRequest(
     @field:NotBlank(message = "이름은 필수입니다")
     @field:Size(max = 100, message = "이름은 100자 이하여야 합니다")
     val name: String = "",
-
     @field:NotBlank(message = "이메일은 필수입니다")
     @field:Email(message = "이메일 형식이 올바르지 않습니다")
     @field:Size(max = 254, message = "이메일은 254자 이하여야 합니다")

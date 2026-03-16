@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional
 class CreateMemberService(
     private val memberPort: MemberPort,
 ) : CreateMemberUseCase {
-
     @Transactional
     override fun createMember(command: CreateMemberCommand): CreateMemberResult {
         val email = command.email.lowercase()

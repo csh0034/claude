@@ -3,7 +3,6 @@ package com.ask.claude.domain.member.fixture
 import com.ask.claude.domain.member.Member
 
 object MemberDomainFixture {
-
     fun unsavedMember(
         name: String = "홍길동",
         email: String = "hong@example.com",

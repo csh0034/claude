@@ -8,10 +8,11 @@ data class CreateMemberResponse(
     val email: String,
 ) {
     companion object {
-        fun from(result: CreateMemberResult): CreateMemberResponse = CreateMemberResponse(
-            id = result.id,
-            name = result.name,
-            email = result.email,
-        )
+        fun from(result: CreateMemberResult): CreateMemberResponse =
+            CreateMemberResponse(
+                id = result.id,
+                name = result.name,
+                email = result.email,
+            )
     }
 }

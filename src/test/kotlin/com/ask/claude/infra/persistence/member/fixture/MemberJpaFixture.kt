@@ -3,7 +3,6 @@ package com.ask.claude.infra.persistence.member.fixture
 import com.ask.claude.infra.persistence.member.MemberJpaEntity
 
 object MemberJpaFixture {
-
     fun createMemberJpaEntity(
         id: Long = 0L,
         name: String = "홍길동",

@@ -5,9 +5,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class MemberMapper {
-
-    fun toDomain(entity: MemberJpaEntity): Member =
-        Member(id = entity.id, name = entity.name, email = entity.email)
+    fun toDomain(entity: MemberJpaEntity): Member = Member(id = entity.id, name = entity.name, email = entity.email)
 
     fun toJpaEntity(domain: Member): MemberJpaEntity =
         MemberJpaEntity(id = domain.id, name = domain.name, email = domain.email)

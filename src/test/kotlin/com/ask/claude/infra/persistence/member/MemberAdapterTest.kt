@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Import
 @DataJpaTest
 @Import(MemberAdapter::class, MemberMapper::class)
 class MemberAdapterTest {
-
     @Autowired
     private lateinit var memberAdapter: MemberAdapter
 

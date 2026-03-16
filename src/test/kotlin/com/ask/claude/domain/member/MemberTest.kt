@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class MemberTest {
-
     @Test
     fun `정상적인 Member 생성`() {
         val member = MemberDomainFixture.savedMember()
@@ -85,7 +84,7 @@ class MemberTest {
 
     @Test
     fun `이메일이 254자를 초과하면 예외 발생`() {
-        val longEmail = "a".repeat(243) + "@example.com"  // 255자
+        val longEmail = "a".repeat(243) + "@example.com" // 255자
         assertThatThrownBy { MemberDomainFixture.createMember(email = longEmail) }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessageContaining("254자")

@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.post
 // GlobalExceptionHandler(@RestControllerAdvice)는 @WebMvcTest 스캔 범위에 자동 포함됨
 @WebMvcTest(MemberController::class)
 class MemberControllerTest {
-
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -28,63 +27,68 @@ class MemberControllerTest {
         val result = MemberApplicationFixture.createMemberResult()
         every { createMemberUseCase.createMember(any()) } returns result
 
-        mockMvc.post("/members") {
-            contentType = MediaType.APPLICATION_JSON
-            content = """{"name": "홍길동", "email": "hong@example.com"}"""
-        }.andExpect {
-            status { isCreated() }
-            jsonPath("$.success") { value(true) }
-            jsonPath("$.data.id") { value(1) }
-            jsonPath("$.data.name") { value("홍길동") }
-            jsonPath("$.data.email") { value("hong@example.com") }
-        }
+        mockMvc
+            .post("/members") {
+                contentType = MediaType.APPLICATION_JSON
+                content = """{"name": "홍길동", "email": "hong@example.com"}"""
+            }.andExpect {
+                status { isCreated() }
+                jsonPath("$.success") { value(true) }
+                jsonPath("$.data.id") { value(1) }
+                jsonPath("$.data.name") { value("홍길동") }
+                jsonPath("$.data.email") { value("hong@example.com") }
+            }
     }
 
     @Test
     fun `POST members - 400 이름 누락`() {
-        mockMvc.post("/members") {
-            contentType = MediaType.APPLICATION_JSON
-            content = """{"name": "", "email": "hong@example.com"}"""
-        }.andExpect {
-            status { isBadRequest() }
-            jsonPath("$.success") { value(false) }
-            jsonPath("$.message") { isNotEmpty() }
-        }
+        mockMvc
+            .post("/members") {
+                contentType = MediaType.APPLICATION_JSON
+                content = """{"name": "", "email": "hong@example.com"}"""
+            }.andExpect {
+                status { isBadRequest() }
+                jsonPath("$.success") { value(false) }
+                jsonPath("$.message") { isNotEmpty() }
+            }
     }
 
     @Test
     fun `POST members - 400 이메일 형식 오류`() {
-        mockMvc.post("/members") {
-            contentType = MediaType.APPLICATION_JSON
-            content = """{"name": "홍길동", "email": "not-an-email"}"""
-        }.andExpect {
-            status { isBadRequest() }
-            jsonPath("$.success") { value(false) }
-        }
+        mockMvc
+            .post("/members") {
+                contentType = MediaType.APPLICATION_JSON
+                content = """{"name": "홍길동", "email": "not-an-email"}"""
+            }.andExpect {
+                status { isBadRequest() }
+                jsonPath("$.success") { value(false) }
+            }
     }
 
     @Test
     fun `POST members - 400 필드 누락`() {
-        mockMvc.post("/members") {
-            contentType = MediaType.APPLICATION_JSON
-            content = """{}"""
-        }.andExpect {
-            status { isBadRequest() }
-            jsonPath("$.success") { value(false) }
-        }
+        mockMvc
+            .post("/members") {
+                contentType = MediaType.APPLICATION_JSON
+                content = """{}"""
+            }.andExpect {
+                status { isBadRequest() }
+                jsonPath("$.success") { value(false) }
+            }
     }
 
     @Test
     fun `POST members - 409 중복 이메일`() {
         every { createMemberUseCase.createMember(any()) } throws BusinessException(ErrorCode.DUPLICATE_EMAIL)
 
-        mockMvc.post("/members") {
-            contentType = MediaType.APPLICATION_JSON
-            content = """{"name": "홍길동", "email": "hong@example.com"}"""
-        }.andExpect {
-            status { isConflict() }
-            jsonPath("$.success") { value(false) }
-            jsonPath("$.message") { value("이미 사용 중인 이메일입니다") }
-        }
+        mockMvc
+            .post("/members") {
+                contentType = MediaType.APPLICATION_JSON
+                content = """{"name": "홍길동", "email": "hong@example.com"}"""
+            }.andExpect {
+                status { isConflict() }
+                jsonPath("$.success") { value(false) }
+                jsonPath("$.message") { value("이미 사용 중인 이메일입니다") }
+            }
     }
 }

@@ -13,7 +13,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class CreateMemberServiceTest {
-
     private val memberPort: MemberPort = mockk()
     private val service = CreateMemberService(memberPort)
 
