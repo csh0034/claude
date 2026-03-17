@@ -6,7 +6,7 @@
 
 **핵심 원칙**: `Model Quality < Harness Quality` — 같은 모델이라도 좋은 Harness가 있으면 안정적인 결과를, 없으면 데모 수준에 머문다.
 
-**4대 핵심 구성요소**: Context Engineering, Architectural Constraints, Verification/Evaluation, Feedback Loop
+**핵심 구성요소**: Context Engineering, Architectural Constraints, Verification/Evaluation, Feedback Loop, Entropy Management/GC
 
 ---
 
@@ -137,6 +137,30 @@
 
 ---
 
+## 6. Entropy Management / Garbage Collection (엔트로피 관리)
+
+> GC 없이 장기 운영되는 에이전트는 자기 퇴화(Self-degradation)한다. 코드베이스와 메모리의 엔트로피를 주기적으로 관리한다.
+
+### 현재 상태
+
+- 메모리 GC 규칙 없음 — `.claude/memory/` 내 stale 메모리 정리 기준 미정의
+- 코드베이스 엔트로피 측정 없음 — AI 생성 코드의 패턴 일관성 검증 미실시
+- 자기 퇴화 모니터링 없음
+
+### 목표
+
+- 메모리 GC 규칙 정의 — stale 메모리 자동 정리 기준 수립
+- 코드베이스 엔트로피 스캔 — AI 생성 코드의 패턴 드리프트 감지
+
+### 작업 항목
+
+| # | 작업 | 수정/신규 파일 |
+|---|------|-------------|
+| 6-1 | 메모리 GC 규칙: `.claude/memory/` 내 90일 미접근 메모리 검토 대상 지정, 중복 메모리 제거, Memory Score(recency × frequency × importance) 기반 pruning 기준 정의 | 수정: `.claude/memory/MEMORY.md`, 신규: `.claude/rules/memory-gc.md` |
+| 6-2 | 코드베이스 엔트로피 스캔: AI가 생성한 코드의 패턴 일관성 검증 스킬 또는 Konsist 규칙 추가 검토 — 네이밍 패턴 드리프트, 중복 로직, 미사용 코드 탐지 | 신규: `.claude/skills/entropy-scan/SKILL.md` 또는 수정: `ArchitectureRuleTest.kt` |
+
+---
+
 ## 실행 우선순위 및 의존성
 
 ```
@@ -149,13 +173,17 @@
 
 [2-1] Konsist 보강 ─────── 독립, 언제든 가능
 [5-1] 검증 스킬 ─────────→ check 태스크 활용
+
+[6-1] 메모리 GC 규칙 ────── 독립, 언제든 가능
+[6-2] 엔트로피 스캔 ────────→ Konsist 보강(2-1) 참고
 ```
 
 **남은 작업 순서**:
 1. 4-1 → 4-2 (피드백 루프 → 워크플로우)
 2. 2-1 (독립 작업)
 3. 5-1 (검증 스킬)
-4. 2-3 (detekt 2.0 정식 출시 후)
+4. 6-1 → 6-2 (엔트로피 관리)
+5. 2-3 (detekt 2.0 정식 출시 후)
 
 ---
 
@@ -166,6 +194,7 @@
 - 각 Phase 완료 후 `./gradlew check` 실행하여 전체 검증 성공 확인
 - 의도적으로 잘못된 코드 작성 후 ktlint/Konsist가 잡아내는지 확인
 - `.kt` 파일 수정 후 PostToolUse 훅이 자동 테스트를 트리거하는지 확인
+- 6단계 작업 항목(6-1, 6-2)이 존재하고 실행 우선순위 다이어그램에 반영되어 있는지 확인
 
 ---
 
