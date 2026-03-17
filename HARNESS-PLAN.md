@@ -139,13 +139,13 @@
 
 ## 6. Entropy Management / Garbage Collection (엔트로피 관리)
 
-> GC 없이 장기 운영되는 에이전트는 자기 퇴화(Self-degradation)한다. 코드베이스와 메모리의 엔트로피를 주기적으로 관리한다.
+> 코드베이스와 메모리의 엔트로피를 주기적으로 관리한다.
 
 ### 현재 상태
 
 - 메모리 GC 규칙 없음 — `.claude/memory/` 내 stale 메모리 정리 기준 미정의
 - 코드베이스 엔트로피 측정 없음 — AI 생성 코드의 패턴 일관성 검증 미실시
-- 자기 퇴화 모니터링 없음
+- 에이전트 성능 모니터링 없음
 
 ### 목표
 
@@ -156,7 +156,7 @@
 
 | # | 작업 | 수정/신규 파일 |
 |---|------|-------------|
-| 6-1 | 메모리 GC 규칙: `.claude/memory/` 내 90일 미접근 메모리 검토 대상 지정, 중복 메모리 제거, Memory Score(recency × frequency × importance) 기반 pruning 기준 정의 | 수정: `.claude/memory/MEMORY.md`, 신규: `.claude/rules/memory-gc.md` |
+| 6-1 | 메모리 GC 규칙: `.claude/memory/` 내 90일 미접근 메모리 검토 대상 지정, 중복 메모리 제거, 90일 미접근 기준 pruning, 중복 메모리 제거 기준 정의 | 수정: `.claude/memory/MEMORY.md`, 신규: `.claude/rules/memory-gc.md` |
 | 6-2 | 코드베이스 엔트로피 스캔: AI가 생성한 코드의 패턴 일관성 검증 스킬 또는 Konsist 규칙 추가 검토 — 네이밍 패턴 드리프트, 중복 로직, 미사용 코드 탐지 | 신규: `.claude/skills/entropy-scan/SKILL.md` 또는 수정: `ArchitectureRuleTest.kt` |
 
 ---
