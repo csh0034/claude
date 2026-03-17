@@ -128,6 +128,17 @@ class ArchitectureRuleTest {
                 .withNameEndingWith("DomainService")
                 .assertTrue { it.resideInPackage(DOMAIN) }
         }
+
+        @Test
+        fun `Domain Event는 Spring ApplicationEvent를 상속할 수 없다`() {
+            scope
+                .classes()
+                .withNameEndingWith("Event")
+                .filter { it.resideInPackage(DOMAIN) }
+                .assertFalse {
+                    it.hasParentWithName("ApplicationEvent")
+                }
+        }
     }
 
     @Nested
@@ -168,6 +179,14 @@ class ArchitectureRuleTest {
             scope
                 .classes()
                 .withNameEndingWith("Result")
+                .assertTrue { it.resideInPackage(APPLICATION) }
+        }
+
+        @Test
+        fun `Query DTO는 application 패키지에 있어야 한다`() {
+            scope
+                .classes()
+                .withNameEndingWith("Query")
                 .assertTrue { it.resideInPackage(APPLICATION) }
         }
     }
@@ -272,6 +291,30 @@ class ArchitectureRuleTest {
                 .classes()
                 .withAnnotationNamed("Configuration")
                 .assertTrue { it.resideInPackage(COMMON) }
+        }
+
+        @Test
+        fun `common 패키지는 @Service 어노테이션을 사용할 수 없다`() {
+            scope
+                .classes()
+                .filter { it.resideInPackage(COMMON) }
+                .assertFalse { it.hasAnnotationWithName("Service") }
+        }
+
+        @Test
+        fun `common 패키지는 @Repository 어노테이션을 사용할 수 없다`() {
+            scope
+                .classes()
+                .filter { it.resideInPackage(COMMON) }
+                .assertFalse { it.hasAnnotationWithName("Repository") }
+        }
+
+        @Test
+        fun `common 패키지는 @Controller 어노테이션을 사용할 수 없다`() {
+            scope
+                .classes()
+                .filter { it.resideInPackage(COMMON) }
+                .assertFalse { it.hasAnnotationWithName("Controller", "RestController") }
         }
     }
 
