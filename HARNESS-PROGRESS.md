@@ -2,6 +2,7 @@
 
 1. Context Engineering
 
+- CLAUDE.md or AGNETS.md 는 목차형식으로 작성
 - 클린아키텍처 + onion 아키텍처 기반 문서 rule
 - test code 작성 rule
 - api 컨벤션 rule
