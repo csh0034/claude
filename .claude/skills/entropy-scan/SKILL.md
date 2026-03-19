@@ -1,6 +1,9 @@
 ---
 name: entropy-scan
 description: 네이밍 패턴 드리프트 감지, 중복 로직 탐지, 문서-코드 정합성 검증, 메모리 GC를 수행하여 코드베이스 엔트로피를 관리한다
+disable-model-invocation: true
+context: fork
+allowed-tools: Glob, Grep, Read
 ---
 
 다음 절차에 따라 코드베이스의 엔트로피를 스캔하고 리포트한다.

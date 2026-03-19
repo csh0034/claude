@@ -1,6 +1,8 @@
 ---
 name: commit
 description: 커밋 요청시 Angular Commit Convention 기반으로 staged 변경사항을 분석하고 실행한다
+disable-model-invocation: true
+allowed-tools: Bash(git *)
 ---
 
 다음 절차에 따라 Angular Commit Convention 기반으로 커밋을 작성하라.

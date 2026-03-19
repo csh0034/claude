@@ -1,7 +1,9 @@
 ---
 name: multi-review
-description: 여러 전문가 관점에서 코드 리뷰를 진행한다
-argument-hint: [all|changes(default)]
+description: Security, Performance, Maintainability, Architecture, Testing 5개 관점에서 병렬 코드 리뷰를 수행한다
+argument-hint: all | changes (default)
+disable-model-invocation: true
+allowed-tools: Bash(git *), Glob, Grep, Read, Agent
 ---
 
 # 멀티 퍼소나 코드 리뷰

@@ -1,6 +1,9 @@
 ---
 name: validate
 description: ./gradlew check 실행 후 결과를 구조화하여 리포트하고, 실패 항목별 수정 가이드를 제공한다
+disable-model-invocation: true
+context: fork
+allowed-tools: Bash(./gradlew *), Read
 ---
 
 다음 절차에 따라 프로젝트 전체 검증을 수행하고 결과를 리포트한다.
