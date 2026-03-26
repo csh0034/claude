@@ -156,7 +156,7 @@
 
 | # | 작업 | 수정/신규 파일 |
 |---|------|-------------|
-| 6-1 | 메모리 GC 규칙: `.claude/memory/` 내 90일 미접근 메모리 검토 대상 지정, 중복 메모리 제거, 90일 미접근 기준 pruning, 중복 메모리 제거 기준 정의 | 수정: `.claude/memory/MEMORY.md`, 신규: `.claude/rules/memory-gc.md` |
+| 6-1 | 메모리 GC 규칙: 90일 미접근 메모리 검토 대상 지정, 중복 메모리 제거, pruning 기준 정의 | `.claude/rules/memory-gc.md` |
 | 6-2 | 코드베이스 엔트로피 스캔: AI가 생성한 코드의 패턴 일관성 검증 스킬 또는 Konsist 규칙 추가 검토 — 네이밍 패턴 드리프트, 중복 로직, 미사용 코드 탐지 | 신규: `.claude/skills/entropy-scan/SKILL.md` 또는 수정: `ArchitectureRuleTest.kt` |
 
 ---

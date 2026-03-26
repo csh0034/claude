@@ -42,7 +42,7 @@ allowed-tools: Glob, Grep, Read
 
 `.claude/rules/memory-gc.md`의 규칙에 따라 메모리를 정리한다:
 
-- `MEMORY.md` 인덱스와 실제 파일의 불일치 확인
+- `.claude/rules/` 내 메모리 관련 파일의 정합성 확인
 - 90일 이상 미접근 메모리 식별
 - 중복 메모리 탐지
 - 제거 후보를 사용자에게 제안
